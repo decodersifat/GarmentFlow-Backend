@@ -55,6 +55,76 @@ const products = [
         availableQuantity: 300,
         minimumOrderQuantity: 20,
         showOnHome: true
+    },
+    {
+        name: 'Classic Leather Belt',
+        description: 'Handcrafted leather belt with a durable metal buckle. The perfect accessory for any outfit.',
+        price: 29.99,
+        category: 'Accessories',
+        images: ['https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=800&h=800&fit=crop'],
+        availableQuantity: 100,
+        minimumOrderQuantity: 10,
+        showOnHome: false
+    },
+    {
+        name: 'Wool Blend Scarf',
+        description: 'Warm and stylish wool blend scarf. Keeps you cozy during the colder months.',
+        price: 34.99,
+        category: 'Accessories',
+        images: ['https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=800&h=800&fit=crop'],
+        availableQuantity: 150,
+        minimumOrderQuantity: 15,
+        showOnHome: false
+    },
+    {
+        name: 'Cargo Pants',
+        description: 'Durable cargo pants with multiple pockets. Practical and stylish for outdoor activities.',
+        price: 54.99,
+        category: 'Pant',
+        images: ['https://images.unsplash.com/photo-1517445312882-566334360955?w=800&h=800&fit=crop'],
+        availableQuantity: 120,
+        minimumOrderQuantity: 10,
+        showOnHome: false
+    },
+    {
+        name: 'Summer Floral Dress',
+        description: 'Lightweight and breezy floral dress. Perfect for summer days and beach vacations.',
+        price: 49.99,
+        category: 'Shirt', // Using Shirt category as general top/dress for now or add new category
+        images: ['https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&h=800&fit=crop'],
+        availableQuantity: 80,
+        minimumOrderQuantity: 5,
+        showOnHome: true
+    },
+    {
+        name: 'Winter Parka',
+        description: 'Heavy-duty winter parka with faux fur hood. Provides ultimate protection against the cold.',
+        price: 149.99,
+        category: 'Jacket',
+        images: ['https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&h=800&fit=crop'],
+        availableQuantity: 60,
+        minimumOrderQuantity: 5,
+        showOnHome: false
+    },
+    {
+        name: 'Silk Tie',
+        description: 'Elegant silk tie for formal occasions. Adds a touch of sophistication to your suit.',
+        price: 39.99,
+        category: 'Accessories',
+        images: ['https://images.unsplash.com/photo-1589756823695-278bc354634d?w=800&h=800&fit=crop'],
+        availableQuantity: 200,
+        minimumOrderQuantity: 20,
+        showOnHome: false
+    },
+    {
+        name: 'Denim Shorts',
+        description: 'Casual denim shorts with a distressed look. A summer staple.',
+        price: 34.99,
+        category: 'Pant',
+        images: ['https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=800&h=800&fit=crop'],
+        availableQuantity: 180,
+        minimumOrderQuantity: 15,
+        showOnHome: false
     }
 ];
 
