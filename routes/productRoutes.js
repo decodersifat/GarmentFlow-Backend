@@ -4,34 +4,54 @@ const Product = require('../models/Product');
 const { authMiddleware, roleMiddleware } = require('../middleware/authMiddleware');
 const { validateProductInput } = require('../middleware/validators');
 
-// Get all products with filters
+// Get all products with advanced filters
 router.get('/', async (req, res) => {
   try {
-    const { category, sortBy, limit = 10, skip = 0 } = req.query;
+    const { category, sortBy, minPrice, maxPrice, search, limit = 10, skip = 0 } = req.query;
     let query = {};
 
+    // Category filter
     if (category) {
       query.category = category;
     }
 
-    let products = Product.find(query);
+    // Search filter
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
 
+    // Price range filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Sorting
+    let sortOption = { createdAt: -1 };
     if (sortBy === 'price_asc') {
-      products = products.sort({ price: 1 });
+      sortOption = { price: 1 };
     } else if (sortBy === 'price_desc') {
-      products = products.sort({ price: -1 });
-    } else {
-      products = products.sort({ createdAt: -1 });
+      sortOption = { price: -1 };
+    } else if (sortBy === 'name') {
+      sortOption = { name: 1 };
     }
 
     const total = await Product.countDocuments(query);
-    const data = await products.limit(parseInt(limit)).skip(parseInt(skip)).populate('createdBy', 'name email');
+    const products = await Product.find(query)
+      .sort(sortOption)
+      .limit(parseInt(limit))
+      .skip(parseInt(skip))
+      .populate('createdBy', 'name email');
 
     res.json({
       total,
       limit: parseInt(limit),
       skip: parseInt(skip),
-      products: data
+      products
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
