@@ -76,6 +76,32 @@ const seedDB = async () => {
             });
         }
 
+        // Find or create an admin user
+        let admin = await User.findOne({ role: 'admin' });
+        if (!admin) {
+            console.log('No admin found. Creating a default admin...');
+            admin = await User.create({
+                name: 'Default Admin',
+                email: 'admin@example.com',
+                password: 'password123',
+                role: 'admin',
+                status: 'approved'
+            });
+        }
+
+        // Find or create a buyer user
+        let buyer = await User.findOne({ role: 'buyer' });
+        if (!buyer) {
+            console.log('No buyer found. Creating a default buyer...');
+            buyer = await User.create({
+                name: 'Default Buyer',
+                email: 'buyer@example.com',
+                password: 'password123',
+                role: 'buyer',
+                status: 'approved'
+            });
+        }
+
         await Product.deleteMany({});
         console.log('Cleared existing products');
 
