@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const { authMiddleware, roleMiddleware } = require('../middleware/authMiddleware');
+const { validateProductInput } = require('../middleware/validators');
 
 // Get all products with filters
 router.get('/', async (req, res) => {
@@ -61,7 +62,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create product (Manager only)
-router.post('/', authMiddleware, roleMiddleware(['manager', 'admin']), async (req, res) => {
+router.post('/', authMiddleware, roleMiddleware(['manager', 'admin']), validateProductInput, async (req, res) => {
   try {
     const { name, description, category, price, availableQuantity, minimumOrderQuantity, images, demoVideoLink, paymentOptions, showOnHome } = req.body;
 
@@ -87,7 +88,7 @@ router.post('/', authMiddleware, roleMiddleware(['manager', 'admin']), async (re
 });
 
 // Update product
-router.put('/:id', authMiddleware, roleMiddleware(['manager', 'admin']), async (req, res) => {
+router.put('/:id', authMiddleware, roleMiddleware(['manager', 'admin']), validateProductInput, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
