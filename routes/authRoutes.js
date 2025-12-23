@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'User registered successfully',
       user: {
         id: user._id,
@@ -70,11 +70,14 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Cookie settings - secure only in production
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: isProduction, // Only secure in production (HTTPS)
+      sameSite: isProduction ? 'none' : 'lax', // 'none' requires secure in production
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
 
     res.json({
@@ -119,11 +122,14 @@ router.post('/google-login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Cookie settings - secure only in production
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: isProduction, // Only secure in production (HTTPS)
+      sameSite: isProduction ? 'none' : 'lax', // 'none' requires secure in production
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
 
     res.json({
@@ -168,11 +174,14 @@ router.post('/github-login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Cookie settings - secure only in production
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: isProduction, // Only secure in production (HTTPS)
+      sameSite: isProduction ? 'none' : 'lax', // 'none' requires secure in production
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
 
     res.json({
@@ -194,7 +203,13 @@ router.post('/github-login', async (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('token');
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/'
+  });
   res.json({ message: 'Logout successful' });
 });
 
