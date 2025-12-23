@@ -30,9 +30,18 @@ mongoose.connect(mongoUri)
     console.log('⚠️  Running in development mode without database. API will return mock data.');
   });
 
+// Root Route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Backend is running',
+    status: 'OK',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health Check
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Server is running',
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -50,7 +59,7 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     message: 'Route not found',
     path: req.originalUrl,
     method: req.method
@@ -61,10 +70,14 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+if (require.main === module) {
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
+
+module.exports = app;
 
 // Graceful Shutdown
 process.on('SIGINT', () => {
