@@ -108,6 +108,9 @@ if (require.main === module) {
       });
     });
   });
+} else {
+  // Serverless / Vercel environment
+  connectDB();
 }
 
 module.exports = app;
