@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // CORS Configuration
-const allowedOrigins = process.env.CLIENT_URL 
+const allowedOrigins = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(',').map(url => url.trim())
   : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'];
 
@@ -23,7 +23,7 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
       callback(null, true);
     } else {
@@ -37,13 +37,18 @@ app.use(cors({
 }));
 
 // MongoDB Connection
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/garmentflow';
-mongoose.connect(mongoUri)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => {
+const connectDB = async () => {
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/garmentflow';
+    await mongoose.connect(mongoUri);
+    console.log('✅ MongoDB connected');
+  } catch (err) {
     console.log('❌ MongoDB connection error:', err.message);
     console.log('⚠️  Running in development mode without database. API will return mock data.');
-  });
+    // Optional: exit if DB is critical
+    // process.exit(1);
+  }
+};
 
 // Root Route
 app.get('/', (req, res) => {
@@ -86,20 +91,29 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 if (require.main === module) {
-  const server = app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  // Connect to DB then start server
+  connectDB().then(() => {
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+
+    // Graceful Shutdown within the scope where 'server' is defined
+    process.on('SIGINT', () => {
+      console.log('\n⛔ Shutting down server...');
+      mongoose.connection.close();
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
   });
 }
 
 module.exports = app;
 
 // Graceful Shutdown
-process.on('SIGINT', () => {
-  console.log('\n⛔ Shutting down server...');
-  mongoose.connection.close();
-  server.close(() => {
-    console.log('✅ Server closed');
-    process.exit(0);
-  });
-});
+// Graceful Shutdown logic moved inside server startup to access 'server' instance
+// but we keep a global handler just in case, though usually it's better scoped.
+// For this refactor, I've moved the specific server.close logic up.
+// Removing this global block to avoid reference error to 'server' if it was defined in the if block.
